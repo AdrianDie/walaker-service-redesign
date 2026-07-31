@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walaker Service - Småjobber i Hallingdal</title>
+<meta name="description" content="Walaker Service hjelper deg med småjobber i Hallingdal: bæring, hagearbeid, maling, montering, rydding, snømåking og mer. Ring eller send melding i dag.">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="announcement-bar" class="announce">
+  <span>Jeg er 100% tilgjengelig, og svarer fortløpende på forespørsler :)</span>
+  <button class="announce-close" id="announce-close" aria-label="Lukk melding">&times;</button>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark">W</span>
+      Walaker Service
+    </a>
+    <div class="nav-links">
+      <a href="#tjenester">Tjenester</a>
+      <a href="#om">Om meg</a>
+      <a href="#kontakt">Kontakt</a>
+      <a href="tel:+4748190098" class="nav-cta">Ring meg</a>
+    </div>
+    <button class="burger" id="burger-open" aria-label="Åpne meny">
+      <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <div class="drawer-panel">
+    <div class="drawer-top">
+      <span class="brand" style="color:#fff;">
+        <span class="brand-mark">W</span>
+        Walaker Service
+      </span>
+      <button class="drawer-close" id="drawer-close" aria-label="Lukk meny">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-links">
+      <a href="#tjenester" class="drawer-link">Tjenester</a>
+      <a href="#om" class="drawer-link">Om meg</a>
+      <a href="#kontakt" class="drawer-link">Kontakt</a>
+    </div>
+    <a href="tel:+4748190098" class="drawer-cta">Ring 481 90 098</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="hero-ring r1"></div>
+  <div class="hero-ring r2"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow reveal">Hallingdal</p>
+    <h1 class="reveal">Walaker Service</h1>
+    <div class="hero-rule reveal"></div>
+    <p class="hero-lead reveal">Hjelper deg med dine småjobber i Hallingdal. Fleksibel, rask og alltid tilgjengelig.</p>
+    <div class="hero-ctas reveal">
+      <a href="tel:+4748190098" class="btn btn-solid">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Ring meg
+      </a>
+      <a href="#tjenester" class="btn btn-ghost">Se tjenester</a>
+    </div>
+  </div>
+</header>
+
+<section class="services section-pad" id="tjenester">
+  <div class="container">
+    <div class="section-head">
+      <p class="section-eyebrow reveal">Hva jeg tilbyr</p>
+      <h2 class="section-title reveal">Mine tjenester</h2>
+    </div>
+    <div class="services-grid" id="services-grid"></div>
+  </div>
+</section>
+
+<section class="about section-pad" id="om">
+  <div class="container">
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="about-badge">W</div>
+        <h2>Om meg</h2>
+        <p>Jeg er en <span class="about-highlight">19 år gammel gutt fra Gol i Hallingdal</span> som er på utkikk etter småjobber. Jeg er fleksibel og blid, og tilbyr et bredt utvalg tjenester.</p>
+        <p>Har du et oppdrag eller noe du trenger hjelp med? Send meg en melding, så svarer jeg så raskt jeg kan.</p>
+      </div>
+      <div class="about-stats reveal">
+        <div class="stat-card">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <h3>100% tilgjengelig</h3>
+          <p>Svarer fortløpende på forespørsler, ofte samme dag.</p>
+        </div>
+        <div class="stat-card">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 1 0-7.65 7.65l8.42 8.42 8.42-8.42a5.4 5.4 0 0 0 0-7.65z"/></svg>
+          <h3>Blid og fleksibel</h3>
+          <p>Tilpasser meg dine behov, uansett størrelse på jobben.</p>
+        </div>
+        <div class="stat-card">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+          <h3>Lokalkjent</h3>
+          <p>Basert i Gol, tar oppdrag rundt om i Hallingdal.</p>
+        </div>
+        <div class="stat-card">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+          <h3>8 tjenester</h3>
+          <p>Fra bæring og hagearbeid til teknisk bistand.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="kontakt section-pad" id="kontakt">
+  <div class="container">
+    <div class="kontakt-grid">
+      <div class="reveal">
+        <p class="section-eyebrow" style="color:var(--orange-500);">Kom i gang</p>
+        <h2 class="section-title" style="color:#fff;">Kontakt</h2>
+        <p class="kontakt-lead"><strong>Har du et oppdrag eller noe du trenger hjelp med?</strong> Send meg en melding, så svarer jeg så raskt jeg kan.</p>
+        <div class="kontakt-rows">
+          <a href="tel:+4748190098" class="kontakt-row">
+            <span class="kontakt-row-icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <span>+47 481 90 098</span>
+          </a>
+          <a href="mailto:post@walakerservice.no" class="kontakt-row">
+            <span class="kontakt-row-icon">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+            </span>
+            <span>post@walakerservice.no</span>
+          </a>
+          <div class="kontakt-row muted">
+            <span class="kontakt-row-icon">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <span>Org.nr: 936 071 937</span>
+          </div>
+        </div>
+        <div class="socials">
+          <a href="https://www.facebook.com/thilo.fossumwalaker" target="_blank" rel="noopener" class="social-btn fb" title="Følg meg på Facebook">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/walaker.service/" target="_blank" rel="noopener" class="social-btn ig" title="Følg meg på Instagram">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="kontakt-panel reveal">
+        <p class="kontakt-panel-eyebrow">Trenger du hjelp?</p>
+        <h3>Send meg en melding</h3>
+        <p>Fortell hva du trenger hjelp med, så tar jeg kontakt så raskt jeg kan. Ring, send e-post eller skriv på sosiale medier, det som passer deg best.</p>
+        <div class="service-tags">
+          <span class="service-tag">Bæring</span>
+          <span class="service-tag">Hagearbeid</span>
+          <span class="service-tag">Maling</span>
+          <span class="service-tag">Montering</span>
+          <span class="service-tag">Rydding</span>
+          <span class="service-tag">Snømåking</span>
+          <span class="service-tag">Teknisk bistand</span>
+          <span class="service-tag">Vask og polering</span>
+        </div>
+        <a href="mailto:post@walakerservice.no?subject=Foresp%C3%B8rsel%20om%20oppdrag" class="btn btn-solid">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send melding
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-copy">&copy; 2026 Walaker Service</p>
+  <p class="footer-credit">Nettside levert av <a href="https://dmarketing.no" target="_blank" rel="noopener">Dietrichs Marketing</a></p>
+</footer>
+
+<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
