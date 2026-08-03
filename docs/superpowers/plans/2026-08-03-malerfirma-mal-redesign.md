@@ -1,0 +1,538 @@
+# Walaker Service — Malerfirma-mal Redesign Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Rebuild `walaker-service-redesign/index.html` as a single-page site using the visual structure, Tailwind setup, and animation pattern of `dmarketing-redesign/maler/malerfirma`, filled with Walaker Service's real content (no fabricated stats, guarantees, or reviews).
+
+**Architecture:** One static HTML file (`index.html`) with Tailwind CDN + inline `<style>` (mirrors the mal's pattern exactly), Motion.js (CDN) for scroll-reveal animations, no build step. `style.css` and `app.js` (GSAP-based) are removed since the mal folds everything into a single file and GSAP is no longer used. `assets/favicon.svg` is kept as-is.
+
+**Tech Stack:** Tailwind CDN, Google Fonts (Bricolage Grotesque + Inter), Motion.js (`https://cdn.jsdelivr.net/npm/motion@11.11.9/dist/motion.js`), vanilla JS for nav scroll state + mobile drawer.
+
+**Verification approach:** This is a static marketing page with no test framework — "testing" here means opening the file in the Browser pane (`preview_start` with `{url: "file://..."}` or a local static server) after each task and confirming the section renders correctly, is responsive, and animations fire. A final end-to-end pass checks all anchor links, tel/mailto links, and mobile menu.
+
+---
+
+## Reference data (used across tasks — do not re-derive)
+
+**Real business info (source: current `index.html` + `walaker-service/walakerservice.no/index.html`):**
+- Name: Walaker Service
+- Owner: Thilo Fossum Walaker, 19 år, fra Gol i Hallingdal
+- Phone: `+47 481 90 098` → `tel:+4748190098`
+- Email: `post@walakerservice.no`
+- Org.nr: `936 071 937`
+- Facebook: `https://www.facebook.com/thilo.fossumwalaker`
+- Instagram: `https://www.instagram.com/walaker.service/`
+- 8 services: Bæring, Hagearbeid, Maling, Montering, Rydding, Snømåking, Teknisk bistand, Vask og polering
+- About text: "Jeg er en 19 år gammel gutt fra Gol i Hallingdal som er på utkikk etter småjobber. Jeg er fleksibel og blid, og tilbyr et bredt utvalg tjenester." / "Har du et oppdrag eller noe du trenger hjelp med? Send meg en melding, så svarer jeg så raskt jeg kan."
+- Existing 4 about-stat cards: "100% tilgjengelig" (Svarer fortløpende på forespørsler, ofte samme dag), "Blid og fleksibel" (Tilpasser meg dine behov, uansett størrelse på jobben), "Lokalkjent" (Basert i Gol, tar oppdrag rundt om i Hallingdal), "8 tjenester" (Fra bæring og hagearbeid til teknisk bistand)
+- Footer credit: "Nettside levert av Dietrichs Marketing" → `https://dmarketing.no`
+
+**Brand tokens (from the mal, unchanged):**
+- Tailwind config: `colors:{brand:'#15803D','brand-light':'#16A34A','brand-soft':'#DCFCE7'}`, `fontFamily:{display:['Bricolage Grotesque','sans-serif'],body:['Inter','sans-serif']}`
+- `.f-display` = Bricolage Grotesque
+- Dark sections use `#0F172A`
+
+---
+
+### Task 1: File skeleton, head, nav, mobile drawer
+
+**Files:**
+- Modify: `walaker-service-redesign/index.html` (full rewrite, start fresh)
+
+- [ ] **Step 1: Replace the entire `<head>` with the mal's Tailwind/font/Motion setup, rebranded**
+
+```html
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walaker Service — Småjobber i Hallingdal</title>
+  <meta name="description" content="Walaker Service hjelper deg med småjobber i Hallingdal: bæring, hagearbeid, maling, montering, rydding, snømåking og mer. Ring eller send melding i dag.">
+  <meta name="theme-color" content="#15803D">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{display:['Bricolage Grotesque','sans-serif'],body:['Inter','sans-serif']},colors:{brand:'#15803D','brand-light':'#16A34A','brand-soft':'#DCFCE7'}}}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bricolage+Grotesque:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/motion@11.11.9/dist/motion.js"></script>
+  <style>
+    *{-webkit-font-smoothing:antialiased}body{font-family:'Inter',sans-serif;background:#fff;color:#0F172A}.f-display{font-family:'Bricolage Grotesque',sans-serif}
+    #nav{transition:background .25s,box-shadow .25s}#nav.scrolled{background:rgba(255,255,255,.92);backdrop-filter:blur(16px);box-shadow:0 1px 0 #E2E8F0}
+    .bg-grid{background-color:#FAFAFA;background-image:linear-gradient(rgba(21,128,61,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(21,128,61,.06) 1px,transparent 1px);background-size:40px 40px}
+    .bento{background:#fff;border:1px solid #E2E8F0;border-radius:20px;transition:box-shadow .2s,transform .2s}.bento:hover{box-shadow:0 12px 40px rgba(21,128,61,.10);transform:translateY(-3px)}
+    .glass-img{position:relative;border-radius:20px;overflow:hidden}.glass-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(15,23,42,.28));pointer-events:none}
+    .step-line::after{content:'';position:absolute;top:18px;left:calc(50% + 22px);width:calc(100% - 44px);height:1px;background:#E2E8F0}
+    @media(max-width:767px){.step-line::after{display:none}}
+    .contact-pill{display:flex;align-items:center;gap:14px;padding:16px 20px;border:1px solid #E2E8F0;border-radius:14px;transition:border-color .2s,box-shadow .2s}.contact-pill:hover{border-color:#15803D;box-shadow:0 4px 16px rgba(21,128,61,.08)}
+    .service-tag{display:inline-block;font-size:12px;font-weight:600;color:#15803D;background:#DCFCE7;border:1px solid #BBF7D0;border-radius:999px;padding:6px 12px}
+    .drawer{position:fixed;inset:0;z-index:60;visibility:hidden}.drawer.open{visibility:visible}
+    .drawer-overlay{position:absolute;inset:0;background:rgba(15,23,42,.5);opacity:0;transition:opacity .25s}.drawer.open .drawer-overlay{opacity:1}
+    .drawer-panel{position:absolute;top:0;right:0;bottom:0;width:82%;max-width:320px;background:#0F172A;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;padding:24px}
+    .drawer.open .drawer-panel{transform:translateX(0)}
+  </style>
+</head>
+<body>
+```
+
+- [ ] **Step 2: Add nav + mobile drawer (rebranded from `W` orange mark to green, reusing existing drawer markup pattern from the current site)**
+
+```html
+<nav id="nav" class="fixed top-0 inset-x-0 z-50">
+  <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+    <a href="#top" class="f-display font-bold text-[15px] tracking-tight text-slate-900 flex items-center gap-2">
+      <span class="w-7 h-7 rounded-lg bg-brand text-white flex items-center justify-center text-[13px]">W</span>
+      Walaker Service
+    </a>
+    <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-slate-500">
+      <a href="#tjenester" class="hover:text-slate-900 transition-colors">Tjenester</a>
+      <a href="#om-meg" class="hover:text-slate-900 transition-colors">Om meg</a>
+      <a href="#kontakt" class="hover:text-slate-900 transition-colors">Kontakt</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="tel:+4748190098" class="hidden sm:inline-flex bg-brand text-white text-[13px] font-semibold px-4 py-2 rounded-lg hover:bg-brand-light transition-colors">Ring meg</a>
+      <button id="burger-open" aria-label="Åpne meny" class="md:hidden w-9 h-9 flex items-center justify-center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <div class="drawer-panel">
+    <div class="flex items-center justify-between mb-10">
+      <span class="f-display font-bold text-white text-[15px] flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-brand text-white flex items-center justify-center text-[13px]">W</span>
+        Walaker Service
+      </span>
+      <button id="drawer-close" aria-label="Lukk meny" class="w-9 h-9 flex items-center justify-center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="flex flex-col gap-6 text-white/80 text-[15px] font-medium">
+      <a href="#tjenester" class="drawer-link">Tjenester</a>
+      <a href="#om-meg" class="drawer-link">Om meg</a>
+      <a href="#kontakt" class="drawer-link">Kontakt</a>
+    </div>
+    <a href="tel:+4748190098" class="mt-auto bg-brand text-white f-display font-semibold text-center px-6 py-3.5 rounded-xl text-[14px]">Ring 481 90 098</a>
+  </div>
+</div>
+```
+
+- [ ] **Step 3: Save and open in Browser pane to confirm the head loads without console errors**
+
+Use `preview_start` with `{url: "file:///C:/Users/adria/website-mirrors/walaker-service-redesign/index.html"}`, then `read_console_messages` — expect no errors (Tailwind CDN + fonts + Motion.js all load). Nav should render fixed at top with logo, links hidden below `md`, burger visible on mobile.
+
+- [ ] **Step 4: Commit**
+
+```bash
+cd walaker-service-redesign
+git add index.html
+git commit -m "Rebuild head, nav, and mobile drawer on malerfirma-mal stack"
+```
+
+---
+
+### Task 2: Hero + stats bar
+
+**Files:**
+- Modify: `walaker-service-redesign/index.html` (append after nav/drawer, before `</body>`)
+
+- [ ] **Step 1: Add the hero section (glass card over full-bleed stock image, generic — not a real photo of the owner)**
+
+```html
+<section id="top" class="relative min-h-screen flex items-end overflow-hidden pt-14">
+  <img src="https://images.unsplash.com/photo-1585128993280-9456c19f4c6c?w=1600&q=85"
+       alt="Hageredskaper og verktøy klare for oppdrag"
+       class="absolute inset-0 w-full h-full object-cover" />
+  <div class="absolute inset-0" style="background:linear-gradient(to bottom,rgba(15,23,42,0.10) 0%,rgba(13,92,44,0.30) 60%,rgba(13,92,44,0.65) 100%);"></div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 pb-16 w-full">
+    <div data-animate class="max-w-xl rounded-3xl p-10 shadow-2xl" style="background:rgba(255,255,255,0.94);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.9);">
+      <p class="text-[12px] font-semibold tracking-widest uppercase text-brand mb-4">Walaker Service · Hallingdal</p>
+      <h1 class="f-display font-extrabold text-4xl md:text-5xl text-slate-900 leading-[1.05] mb-5" style="letter-spacing:-0.025em;">
+        Hjelp til dine<br/><span class="italic" style="color:#15803D">småjobber.</span>
+      </h1>
+      <p class="text-slate-500 text-[15px] leading-relaxed mb-7 max-w-md">Hjelper deg med dine småjobber i Hallingdal. Fleksibel, rask og alltid tilgjengelig.</p>
+
+      <div class="flex flex-col sm:flex-row gap-3 mb-7">
+        <a href="tel:+4748190098" class="bg-brand text-white f-display font-semibold px-6 py-3 rounded-xl text-[14px] hover:bg-brand-light transition-all hover:scale-[1.02] text-center">Ring meg</a>
+        <a href="#tjenester" class="inline-flex items-center justify-center gap-2 border border-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-xl text-[14px] hover:border-slate-400 transition-all">Se tjenester</a>
+      </div>
+
+      <div class="flex flex-wrap gap-x-5 gap-y-2 pt-5 border-t border-slate-100 text-[12px] text-slate-500">
+        <span class="flex items-center gap-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>100% tilgjengelig</span>
+        <span class="flex items-center gap-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Lokalkjent i Hallingdal</span>
+        <span class="flex items-center gap-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Svarer fortløpende</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="border-y border-slate-100" style="background:#FAFAFA">
+  <div class="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center" data-stagger>
+    <div><div class="f-display font-extrabold text-[36px] text-brand" style="letter-spacing:-.03em">8</div><div class="text-[12px] text-slate-400 uppercase tracking-wide mt-1">Tjenester</div></div>
+    <div><div class="f-display font-extrabold text-[36px] text-slate-900" style="letter-spacing:-.03em">100%</div><div class="text-[12px] text-slate-400 uppercase tracking-wide mt-1">Tilgjengelig</div></div>
+    <div><div class="f-display font-extrabold text-[36px] text-slate-900" style="letter-spacing:-.03em">Gol</div><div class="text-[12px] text-slate-400 uppercase tracking-wide mt-1">Hallingdal</div></div>
+    <div><div class="f-display font-extrabold text-[36px] text-slate-900" style="letter-spacing:-.03em">Avtalt</div><div class="text-[12px] text-slate-400 uppercase tracking-wide mt-1">Pris</div></div>
+  </div>
+</div>
+```
+
+- [ ] **Step 2: Reload in Browser pane, confirm hero fills viewport, glass card is legible, stats row renders 4 columns on desktop / 2 on mobile via `resize_window`**
+
+- [ ] **Step 3: Commit**
+
+```bash
+cd walaker-service-redesign
+git add index.html
+git commit -m "Add hero and honest stats bar"
+```
+
+---
+
+### Task 3: Tjenester bento grid
+
+**Files:**
+- Modify: `walaker-service-redesign/index.html` (append after stats bar)
+
+- [ ] **Step 1: Add the services section with the 8 real services in the mal's bento layout**
+
+```html
+<section class="py-24 px-6" id="tjenester">
+  <div class="max-w-6xl mx-auto">
+    <div data-animate class="mb-12">
+      <p class="text-[12px] font-semibold tracking-widest uppercase text-brand mb-3">Hva jeg tilbyr</p>
+      <h2 class="f-display font-extrabold text-4xl text-slate-900" style="letter-spacing:-.03em">Mine tjenester</h2>
+    </div>
+    <div class="grid grid-cols-12 gap-5" data-stagger>
+
+      <div class="bento col-span-12 md:col-span-8 p-8 flex gap-8 items-center">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:#DCFCE7">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 1 0-7.65 7.65l8.42 8.42 8.42-8.42a5.4 5.4 0 0 0 0-7.65z"/></svg>
+        </div>
+        <div>
+          <div class="inline-flex text-[11px] font-semibold text-brand bg-brand-soft border border-green-100 px-2.5 py-1 rounded-full mb-3">Blid og fleksibel</div>
+          <h3 class="f-display font-bold text-[22px] text-slate-900 mb-2">Bæring & flytting</h3>
+          <p class="text-slate-500 text-[14px] leading-relaxed max-w-md">Tunge løft, flyttehjelp eller bæring av møbler og utstyr. Jeg stiller opp der du trenger en ekstra hånd.</p>
+        </div>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:#DCFCE7">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M12 22c-4.97 0-9-2.686-9-6 0-2 2-3.5 4-4M12 22c4.97 0 9-2.686 9-6 0-2-2-3.5-4-4M12 22V10M12 10a4 4 0 100-8 4 4 0 000 8z"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Hagearbeid</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Plenklipp, beskjæring, ugressluking og opprydding i hagen.</p>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:#DCFCE7">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Maling</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Mindre malejobber inne og ute, gjerder, uthus og annet.</p>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(21,128,61,.08)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Montering</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Møbler, hyller og annet som skal settes sammen eller opp.</p>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(21,128,61,.08)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Rydding</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Opprydding i bod, garasje, kjeller eller uteområder.</p>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(21,128,61,.08)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Snømåking</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Måking av innkjørsel, gangvei og tak vinterstid.</p>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(21,128,61,.08)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="12" cy="15" r="2"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Teknisk bistand</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Enkel hjelp med teknisk utstyr og oppkobling i hjemmet.</p>
+      </div>
+
+      <div class="bento col-span-12 md:col-span-4 p-7">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(21,128,61,.08)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><path d="M3 3l18 18M10.5 10.5a2 2 0 102.83 2.83"/><path d="M6 6l1.5-1.5M18 18l-1.5 1.5"/></svg>
+        </div>
+        <h3 class="f-display font-bold text-[18px] text-slate-900 mb-2">Vask og polering</h3>
+        <p class="text-slate-500 text-[13px] leading-relaxed">Vask og polering av bil, terrasse eller andre overflater.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+```
+
+- [ ] **Step 2: Reload in Browser pane, confirm all 8 service cards render, bento layout collapses to single column on mobile (`resize_window` to mobile preset)**
+
+- [ ] **Step 3: Commit**
+
+```bash
+cd walaker-service-redesign
+git add index.html
+git commit -m "Add tjenester bento grid with the 8 real services"
+```
+
+---
+
+### Task 4: Om meg split + prosess
+
+**Files:**
+- Modify: `walaker-service-redesign/index.html` (append after tjenester section)
+
+- [ ] **Step 1: Add "Om meg" split section using the real bio text**
+
+```html
+<section class="py-24 px-6" style="background:#FAFAFA" id="om-meg">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+    <div data-animate class="glass-img aspect-[4/3]">
+      <img src="https://images.unsplash.com/photo-1617104551722-3b2d51366400?w=800&q=80"
+           alt="Hageredskap og verktøy" class="w-full h-full object-cover" />
+    </div>
+    <div data-animate>
+      <p class="text-[12px] font-semibold tracking-widest uppercase text-brand mb-4">Om meg</p>
+      <h2 class="f-display font-extrabold text-4xl text-slate-900 mb-6" style="letter-spacing:-.03em">Jeg er alltid klar til å hjelpe til</h2>
+      <p class="text-slate-500 text-[15px] leading-relaxed mb-5">Jeg er en 19 år gammel gutt fra Gol i Hallingdal som er på utkikk etter småjobber. Jeg er fleksibel og blid, og tilbyr et bredt utvalg tjenester.</p>
+      <p class="text-slate-500 text-[14px] leading-relaxed mb-8">Har du et oppdrag eller noe du trenger hjelp med? Send meg en melding, så svarer jeg så raskt jeg kan.</p>
+      <div class="grid grid-cols-2 gap-5">
+        <div class="bg-white border border-slate-100 rounded-xl p-5">
+          <h3 class="f-display font-bold text-[14px] text-slate-900 mb-1">100% tilgjengelig</h3>
+          <p class="text-slate-500 text-[12px] leading-relaxed">Svarer fortløpende, ofte samme dag.</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-xl p-5">
+          <h3 class="f-display font-bold text-[14px] text-slate-900 mb-1">Blid og fleksibel</h3>
+          <p class="text-slate-500 text-[12px] leading-relaxed">Tilpasser meg dine behov.</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-xl p-5">
+          <h3 class="f-display font-bold text-[14px] text-slate-900 mb-1">Lokalkjent</h3>
+          <p class="text-slate-500 text-[12px] leading-relaxed">Basert i Gol, tar oppdrag i Hallingdal.</p>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-xl p-5">
+          <h3 class="f-display font-bold text-[14px] text-slate-900 mb-1">8 tjenester</h3>
+          <p class="text-slate-500 text-[12px] leading-relaxed">Fra bæring til teknisk bistand.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+- [ ] **Step 2: Add the 3-step honest process section (replaces the mal's 4-step "5-year guarantee" version)**
+
+```html
+<section class="py-24 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div data-animate class="text-center mb-16">
+      <p class="text-[12px] font-semibold tracking-widest uppercase text-brand mb-3">Fremgangsmåte</p>
+      <h2 class="f-display font-extrabold text-4xl text-slate-900" style="letter-spacing:-.03em">Enkelt fra start til slutt</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8" data-stagger>
+      <div class="relative text-center step-line">
+        <div class="w-10 h-10 rounded-full bg-brand text-white f-display font-bold text-[16px] flex items-center justify-center mx-auto mb-5">1</div>
+        <h3 class="f-display font-bold text-[16px] text-slate-900 mb-2">Send melding</h3>
+        <p class="text-slate-400 text-[13px] leading-relaxed">Ring, send e-post eller skriv på sosiale medier — det som passer deg best.</p>
+      </div>
+      <div class="relative text-center step-line">
+        <div class="w-10 h-10 rounded-full bg-brand text-white f-display font-bold text-[16px] flex items-center justify-center mx-auto mb-5">2</div>
+        <h3 class="f-display font-bold text-[16px] text-slate-900 mb-2">Avtal tid og pris</h3>
+        <p class="text-slate-400 text-[13px] leading-relaxed">Vi blir enige om når jobben passer og hva den koster.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-10 h-10 rounded-full bg-brand text-white f-display font-bold text-[16px] flex items-center justify-center mx-auto mb-5">3</div>
+        <h3 class="f-display font-bold text-[16px] text-slate-900 mb-2">Jobben gjøres</h3>
+        <p class="text-slate-400 text-[13px] leading-relaxed">Jeg stiller opp og gjør jobben skikkelig, til avtalt tid.</p>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+- [ ] **Step 3: Reload in Browser pane, confirm both sections render and images load (or show the platform's broken-image icon gracefully — not a blocking issue since these are decorative stock photos)**
+
+- [ ] **Step 4: Commit**
+
+```bash
+cd walaker-service-redesign
+git add index.html
+git commit -m "Add om meg and prosess sections with real bio content"
+```
+
+---
+
+### Task 5: Dark CTA, kontakt, footer, script
+
+**Files:**
+- Modify: `walaker-service-redesign/index.html` (append after prosess section, before `</body>`)
+- Delete: `walaker-service-redesign/style.css`
+- Delete: `walaker-service-redesign/app.js`
+
+- [ ] **Step 1: Add dark CTA section**
+
+```html
+<section class="py-20 px-6" style="background:#0F172A">
+  <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+    <div data-animate>
+      <h2 class="f-display font-extrabold text-3xl text-white mb-2" style="letter-spacing:-.03em">Klar for å få hjulpet?</h2>
+      <p class="text-slate-400 text-[15px]">Send meg en melding, så svarer jeg så raskt jeg kan.</p>
+    </div>
+    <div class="flex gap-3 flex-shrink-0">
+      <a href="tel:+4748190098" class="bg-brand text-white f-display font-semibold px-6 py-3.5 rounded-xl text-[14px] hover:bg-brand-light transition-colors">Ring 481 90 098</a>
+      <a href="mailto:post@walakerservice.no?subject=Foresp%C3%B8rsel%20om%20oppdrag" class="bg-white/10 border border-white/20 text-white f-display font-semibold px-6 py-3.5 rounded-xl text-[14px] hover:bg-white/20 transition-colors">Send melding</a>
+    </div>
+  </div>
+</section>
+```
+
+- [ ] **Step 2: Add kontakt section (real contact methods, no fabricated form/address/hours)**
+
+```html
+<section class="py-24 px-6" id="kontakt">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
+    <div data-animate class="space-y-4">
+      <p class="text-[12px] font-semibold tracking-widest uppercase text-brand mb-3">Kontakt</p>
+      <h2 class="f-display font-extrabold text-4xl text-slate-900 mb-6" style="letter-spacing:-.03em">Ta kontakt</h2>
+      <a href="tel:+4748190098" class="contact-pill block no-underline">
+        <div class="w-10 h-10 bg-brand-soft rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.66A2 2 0 012 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <div><div class="text-[11px] text-slate-400 uppercase tracking-wide">Telefon</div><div class="f-display font-bold text-[16px] text-slate-900">+47 481 90 098</div></div>
+      </a>
+      <a href="mailto:post@walakerservice.no" class="contact-pill block no-underline">
+        <div class="w-10 h-10 bg-brand-soft rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <div><div class="text-[11px] text-slate-400 uppercase tracking-wide">E-post</div><div class="f-display font-bold text-[15px] text-slate-900">post@walakerservice.no</div></div>
+      </a>
+      <div class="flex gap-3 pt-2">
+        <a href="https://www.facebook.com/thilo.fossumwalaker" target="_blank" rel="noopener" class="w-11 h-11 rounded-xl bg-brand-soft flex items-center justify-center" title="Følg meg på Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#15803D"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/walaker.service/" target="_blank" rel="noopener" class="w-11 h-11 rounded-xl bg-brand-soft flex items-center justify-center" title="Følg meg på Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div data-animate class="bg-white border border-slate-100 rounded-2xl p-8">
+      <p class="text-[12px] font-semibold tracking-widest uppercase text-brand mb-3">Trenger du hjelp?</p>
+      <h3 class="f-display font-bold text-[20px] text-slate-900 mb-3">Send meg en melding</h3>
+      <p class="text-slate-500 text-[14px] leading-relaxed mb-6">Fortell hva du trenger hjelp med, så tar jeg kontakt så raskt jeg kan. Ring, send e-post eller skriv på sosiale medier, det som passer deg best.</p>
+      <div class="flex flex-wrap gap-2 mb-7">
+        <span class="service-tag">Bæring</span>
+        <span class="service-tag">Hagearbeid</span>
+        <span class="service-tag">Maling</span>
+        <span class="service-tag">Montering</span>
+        <span class="service-tag">Rydding</span>
+        <span class="service-tag">Snømåking</span>
+        <span class="service-tag">Teknisk bistand</span>
+        <span class="service-tag">Vask og polering</span>
+      </div>
+      <a href="mailto:post@walakerservice.no?subject=Foresp%C3%B8rsel%20om%20oppdrag" class="w-full inline-flex items-center justify-center gap-2 bg-brand text-white f-display font-semibold px-6 py-3.5 rounded-xl text-[14px] hover:bg-brand-light transition-colors">Send melding</a>
+    </div>
+  </div>
+</section>
+```
+
+- [ ] **Step 3: Add footer + closing script**
+
+```html
+<footer style="background:#0F172A" class="text-white py-16 px-6 border-t border-white/5">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-3 gap-10 mb-10">
+      <div>
+        <div class="f-display font-bold text-[18px] mb-3">Walaker Service</div>
+        <p class="text-[13px] leading-relaxed max-w-xs" style="color:rgba(255,255,255,.45)">Småjobber i Hallingdal.</p>
+      </div>
+      <div>
+        <div class="text-[11px] font-semibold tracking-widest uppercase mb-4" style="color:rgba(255,255,255,.3)">Sider</div>
+        <ul class="space-y-2 text-[13px]" style="color:rgba(255,255,255,.55)">
+          <li><a href="#tjenester" class="hover:text-white transition-colors">Tjenester</a></li>
+          <li><a href="#om-meg" class="hover:text-white transition-colors">Om meg</a></li>
+          <li><a href="#kontakt" class="hover:text-white transition-colors">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-[11px] font-semibold tracking-widest uppercase mb-4" style="color:rgba(255,255,255,.3)">Kontakt</div>
+        <ul class="space-y-2 text-[13px]" style="color:rgba(255,255,255,.55)">
+          <li>+47 481 90 098</li><li>post@walakerservice.no</li>
+          <li class="pt-2 text-[12px]" style="color:rgba(255,255,255,.25)">Org.nr: 936 071 937</li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t pt-6 flex flex-col sm:flex-row justify-between items-center gap-3" style="border-color:rgba(255,255,255,.08)">
+      <p class="text-[12px]" style="color:rgba(255,255,255,.25)">&copy; 2026 Walaker Service</p>
+      <p class="text-[12px]" style="color:rgba(255,255,255,.25)">Nettside levert av <a href="https://dmarketing.no" target="_blank" rel="noopener" class="hover:text-white/60">Dietrichs Marketing</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 24); });
+
+  const drawer = document.getElementById('drawer');
+  document.getElementById('burger-open').addEventListener('click', () => drawer.classList.add('open'));
+  document.getElementById('drawer-close').addEventListener('click', () => drawer.classList.remove('open'));
+  document.getElementById('drawer-overlay').addEventListener('click', () => drawer.classList.remove('open'));
+  document.querySelectorAll('.drawer-link').forEach(a => a.addEventListener('click', () => drawer.classList.remove('open')));
+
+  window.addEventListener('load', () => {
+    if (typeof Motion === 'undefined') return;
+    const { inView, animate } = Motion;
+    inView('[data-animate]', ({ target }) => { animate(target, { opacity:[0,1], y:[28,0] }, { duration:.55, easing:[.25,.46,.45,.94] }); });
+    inView('[data-stagger]', ({ target }) => { animate(target.querySelectorAll(':scope > *'), { opacity:[0,1], y:[20,0] }, { duration:.4, delay:animate.stagger(.09) }); });
+  });
+</script>
+</body>
+</html>
+```
+
+- [ ] **Step 4: Remove the now-unused GSAP-based files**
+
+```bash
+cd walaker-service-redesign
+git rm style.css app.js
+```
+
+- [ ] **Step 5: Reload in Browser pane. Verification checklist:**
+  - `read_console_messages` — no errors
+  - Click the mobile burger (after `resize_window` to mobile preset) — drawer opens/closes, links scroll to the right anchor and close the drawer
+  - `find` + `computer` click each nav anchor link (`#tjenester`, `#om-meg`, `#kontakt`) — page scrolls to correct section
+  - Confirm `tel:` and `mailto:` links have the correct real numbers/addresses via `read_page`
+  - `resize_window` to desktop/tablet/mobile presets — no horizontal overflow, bento grid and om-meg grid stack correctly
+  - Scroll through the whole page and confirm `data-animate`/`data-stagger` elements fade/slide in (Motion.js firing)
+
+- [ ] **Step 6: Commit**
+
+```bash
+cd walaker-service-redesign
+git add -A
+git commit -m "Add CTA, kontakt, footer, and nav/animation script; remove old GSAP assets"
+```
+
+---
+
+## Self-review notes
+
+- **Spec coverage:** All 10 sections from the spec are covered — Task 1 (nav), Task 2 (hero + stats), Task 3 (tjenester), Task 4 (om meg + prosess), Task 5 (CTA + kontakt + footer). Anmeldelser section is intentionally absent per spec decision.
+- **No fabricated content:** stats, process, and contact sections use only real data from the reference block; no team members, no fake years-in-business, no fake reviews, no invented address/hours.
+- **File cleanup:** `style.css` and `app.js` are removed in Task 5 since Task 1 replaces their functionality with mal-style inline `<style>` and a small inline `<script>` — no orphaned files remain.
+- **Out of scope confirmed:** no edits to `walaker-service/` (raw mirror) or the `malerfirma` template folder; no `git push` — publishing needs Adrian's explicit go-ahead.
